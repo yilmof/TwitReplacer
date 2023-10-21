@@ -64,6 +64,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelTyping(m.ChannelID)
 
 		link := ""
+		toSend := ""
 
 		if caseContains(m.Content, "https://twitter.com") {
 			link = "https://twitter.com"
@@ -74,8 +75,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		editedMsg := strings.Replace(m.Content, link, "https://fxtwitter.com", 1)
+		words := strings.Fields(editedMsg)
+		for _, word := range words {
+			if caseContains(word, "https://fxtwitter.com") {
+				toSend = word
+			}
+		}
 
-		_, err := s.ChannelMessageSendReply(m.ChannelID, editedMsg, m.Reference())
+		_, err := s.ChannelMessageSendReply(m.ChannelID, toSend, m.Reference())
 		if err != nil {
 			fmt.Println("Error", err)
 		}
